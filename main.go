@@ -7,7 +7,9 @@ import (
 	"OtterAnalytics/models"
 	"OtterAnalytics/pkg/errors"
 	"OtterAnalytics/pkg/pgsql"
+	"OtterAnalytics/pkg/redis"
 	"context"
+	"fmt"
 	"gorm.io/gorm"
 	"log"
 	"net"
@@ -31,6 +33,14 @@ func mustMigrateDB(db *gorm.DB) {
 			}
 		}
 	}
+}
+
+func mustRedis() *redis.RedisClient {
+	cfg := config.LoadConfig()
+	client := redis.ConnectRedisClient(cfg.RedisHost, cfg.RedisPort, cfg.RedisDB)
+	errors.Must(client.Ping(), "Error connecting to Redis")
+	fmt.Println("成功连接 Redis！")
+	return client
 }
 
 func closeDB(db *gorm.DB) {
@@ -70,10 +80,11 @@ func main() {
 	cfg := config.LoadConfig()
 
 	db := mustInitDB()
+	redisClient := mustRedis()
 	defer closeDB(db)
 	mustMigrateDB(db)
 
-	handler := handlers.NewHandler(db, cfg)
+	handler := handlers.NewHandler(db, cfg, redisClient)
 	app.InitAppRoutes()
 
 	addr := cfg.Host + ":" + strconv.Itoa(cfg.Port)

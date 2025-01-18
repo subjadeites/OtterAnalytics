@@ -3,6 +3,7 @@ package handlers
 import (
 	"OtterAnalytics/config"
 	"OtterAnalytics/pkg/errors"
+	"OtterAnalytics/pkg/redis"
 	"bufio"
 	"gorm.io/gorm"
 	"io"
@@ -14,12 +15,14 @@ import (
 type Handler struct {
 	DB     *gorm.DB
 	Config *config.Config
+	Redis  *redis.RedisClient
 }
 
-func NewHandler(db *gorm.DB, cfg *config.Config) *Handler {
+func NewHandler(db *gorm.DB, cfg *config.Config, redis *redis.RedisClient) *Handler {
 	return &Handler{
 		DB:     db,
 		Config: cfg,
+		Redis:  redis,
 	}
 }
 

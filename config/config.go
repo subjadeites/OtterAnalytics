@@ -17,6 +17,9 @@ type Config struct {
 	PgsqlUser     string
 	PgsqlPassword string
 	Token         string
+	RedisHost     string
+	RedisPort     int
+	RedisDB       int
 }
 
 var (
@@ -34,6 +37,9 @@ func initDefaultConfig() *Config {
 		PgsqlUser:     "postgres",
 		PgsqlPassword: "password",
 		Token:         "",
+		RedisHost:     "localhost",
+		RedisPort:     6379,
+		RedisDB:       3,
 	}
 }
 
